@@ -43,7 +43,7 @@ app_license = "mit"
 # page_js = {"page" : "public/js/file.js"}
 
 # include js in doctype views
-# doctype_js = {"doctype" : "public/js/doctype.js"}
+doctype_js = {"Delivery Note": "public/js/delivery_note.js"}
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
@@ -78,6 +78,19 @@ app_license = "mit"
 # 	"methods": "custom_temp.utils.jinja_methods",
 # 	"filters": "custom_temp.utils.jinja_filters"
 # }
+
+# Fixtures
+# --------
+# Fixtures are used to export/import custom fields, property setters, etc.
+fixtures = [
+    {
+        "doctype": "Custom Field",
+        "filters": [
+            ["dt", "=", "Delivery Note Item"],
+            ["fieldname", "like", "custom_%"],
+        ],
+    }
+]
 
 # Installation
 # ------------
@@ -129,42 +142,44 @@ app_license = "mit"
 # ---------------
 # Override standard doctype classes
 
-# override_doctype_class = {
-# 	"ToDo": "custom_app.overrides.CustomToDo"
-# }
+override_doctype_class = {
+    # 	"ToDo": "custom_app.overrides.CustomToDo"
+    "Delivery Note": "custom_temp.overrides.delivery_note.CustomDeliveryNote"
+}
 
 # Document Events
 # ---------------
 # Hook on document methods and events
 
-# doc_events = {
-# 	"*": {
-# 		"on_update": "method",
-# 		"on_cancel": "method",
-# 		"on_trash": "method"
-# 	}
-# }
+doc_events = {
+    "Delivery Note": {
+        "on_submit": "custom_temp.api.after_submit_delivery_note",
+        "on_cancel": "custom_temp.api.after_cancel_delivery_note",
+    }
+}
 
 # Scheduled Tasks
 # ---------------
 
-# scheduler_events = {
-# 	"all": [
-# 		"custom_temp.tasks.all"
-# 	],
-# 	"daily": [
-# 		"custom_temp.tasks.daily"
-# 	],
-# 	"hourly": [
-# 		"custom_temp.tasks.hourly"
-# 	],
-# 	"weekly": [
-# 		"custom_temp.tasks.weekly"
-# 	],
-# 	"monthly": [
-# 		"custom_temp.tasks.monthly"
-# 	],
-# }
+scheduler_events = {
+    # 	"all": [
+    # 		"custom_temp.tasks.all"
+    # 	],
+    "daily": [
+        # Run daily to catch up on any missed processing
+        "custom_temp.tasks.process_delivery_note_deferred_expense"
+    ],
+    # 	"hourly": [
+    # 		"custom_temp.tasks.hourly"
+    # 	],
+    # 	"weekly": [
+    # 		"custom_temp.tasks.weekly"
+    # 	],
+    # 	"monthly": [
+    # 		"custom_temp.tasks.monthly"
+    # 	],
+    "monthly_long": ["custom_temp.tasks.process_delivery_note_deferred_expense"],
+}
 
 # Testing
 # -------
@@ -246,4 +261,3 @@ app_license = "mit"
 # ------------
 # List of apps whose translatable strings should be excluded from this app's translations.
 # ignore_translatable_strings_from = []
-
