@@ -167,7 +167,7 @@ scheduler_events = {
     # 	],
     "daily": [
         # Run daily to catch up on any missed processing
-        "custom_temp.tasks.process_delivery_note_deferred_expense"
+        "custom_temp.deferred.process_deferred_expenses"
     ],
     # 	"hourly": [
     # 		"custom_temp.tasks.hourly"
@@ -178,7 +178,7 @@ scheduler_events = {
     # 	"monthly": [
     # 		"custom_temp.tasks.monthly"
     # 	],
-    "monthly_long": ["custom_temp.tasks.process_delivery_note_deferred_expense"],
+    "monthly_long": ["custom_temp.deferred.process_deferred_expenses"],
 }
 
 # Testing

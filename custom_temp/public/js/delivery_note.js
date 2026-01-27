@@ -18,6 +18,20 @@ frappe.ui.form.on("Delivery Note", {
 		});
 	},
 	refresh: function (frm) {
+		// Add "Deferred Ledger" to the View menu
+		if (frm.doc.docstatus === 1) {
+			frm.add_custom_button(
+				__("Deferred Ledger"),
+				function () {
+					frappe.set_route("query-report", "Delivery Note Deferred Ledger", {
+						delivery_note: frm.doc.name,
+						company: frm.doc.company,
+					});
+				},
+				__("View"),
+			);
+		}
+
 		// Add button to manually process deferred expense
 		if (frm.doc.docstatus === 1) {
 			frm.add_custom_button(
