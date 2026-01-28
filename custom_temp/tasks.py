@@ -476,7 +476,7 @@ def _get_booking_period(doc, item, deferred_account, posting_date, prev_end_date
 
     # Don't book into the future
     if end_date > getdate(posting_date):
-        end_date = getdate(posting_date)
+        return None, None, None
 
     # Validate date range
     if start_date <= end_date:
