@@ -165,10 +165,6 @@ scheduler_events = {
     # 	"all": [
     # 		"custom_temp.tasks.all"
     # 	],
-    "daily": [
-        # Run daily to catch up on any missed processing
-        "custom_temp.deferred.process_deferred_expenses"
-    ],
     # 	"hourly": [
     # 		"custom_temp.tasks.hourly"
     # 	],
@@ -178,7 +174,15 @@ scheduler_events = {
     # 	"monthly": [
     # 		"custom_temp.tasks.monthly"
     # 	],
-    "monthly_long": ["custom_temp.deferred.process_deferred_expenses"],
+    # Process deferred expenses from Delivery Notes
+    # Runs monthly (long job) - creates GL entries to recognize deferred expenses
+    "monthly_long": [
+        "custom_temp.tasks.process_delivery_note_deferred_expenses",
+    ],
+    # Also run daily to catch up on any missed months
+    # "daily": [
+    #     "custom_temp.tasks.process_delivery_note_deferred_expenses",
+    # ],
 }
 
 # Testing

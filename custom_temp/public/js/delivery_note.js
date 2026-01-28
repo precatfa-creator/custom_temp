@@ -17,45 +17,7 @@ frappe.ui.form.on("Delivery Note", {
 			};
 		});
 	},
-	refresh: function (frm) {
-		// Add "Deferred Ledger" to the View menu
-		if (frm.doc.docstatus === 1) {
-			frm.add_custom_button(
-				__("Deferred Ledger"),
-				function () {
-					frappe.set_route("query-report", "Delivery Note Deferred Ledger", {
-						delivery_note: frm.doc.name,
-						company: frm.doc.company,
-					});
-				},
-				__("View"),
-			);
-		}
-
-		// Add button to manually process deferred expense
-		if (frm.doc.docstatus === 1) {
-			frm.add_custom_button(
-				__("Process Deferred Expense"),
-				function () {
-					frappe.call({
-						method: "custom_temp.api.process_single_delivery_note_deferred_expense",
-						args: {
-							delivery_note_name: frm.doc.name,
-							posting_date: frm.doc.posting_date,
-						},
-						freeze: true,
-						freeze_message: __("Processing Deferred Expense..."),
-						callback: function (r) {
-							if (r.message) {
-								frm.reload_doc();
-							}
-						},
-					});
-				},
-				__("Actions"),
-			);
-		}
-	},
+	refresh: function (frm) {},
 });
 
 frappe.ui.form.on("Delivery Note Item", {
@@ -65,7 +27,7 @@ frappe.ui.form.on("Delivery Note Item", {
 		if (!row.item_code) return;
 
 		frappe.call({
-			method: "get_item_deferred_details",
+			method: "custom_temp.api.get_item_deferred_details",
 			args: {
 				item_code: row.item_code,
 				company: frm.doc.company,

@@ -132,18 +132,4 @@ If your manual GL entries are getting hash names (random characters), it's usual
 
 ---
 
-### Installation
-
-You can install this app using the [bench](https://github.com/frappe/bench) CLI:
-
-```bash
-cd $PATH_TO_YOUR_BENCH
-bench get-app $URL_OF_THIS_REPO --branch develop
-bench install-app custom_temp
-```
-
----
-
-### License
-
-mit
+_Created by Antigravity AI for the custom_temp app._

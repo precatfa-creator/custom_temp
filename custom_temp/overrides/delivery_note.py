@@ -106,6 +106,12 @@ class CustomDeliveryNote(DeliveryNote):
         if has_deferred_items and not self.is_return:
             # Build entries manually to avoid check_expense_account validation
             for item in self.items:
+
+                # FIX 1: Get the warehouse account (Credit side)
+                # item_warehouse_account = warehouse_account.get(
+                # 	item.warehouse, {}
+                # ).get("account")
+
                 if item.get("custom_enable_deferred_expense"):
                     deferred_account = item.get("custom_deferred_expense_account")
                     expense_account = item.expense_account
@@ -124,11 +130,12 @@ class CustomDeliveryNote(DeliveryNote):
                                 self.get_gl_dict(
                                     {
                                         "account": deferred_account,
-                                        "against": expense_account,
+                                        "against": self.customer,
                                         "debit": amount,
                                         "debit_in_account_currency": amount,
                                         "cost_center": item.cost_center,
                                         "project": item.project or self.project,
+                                        "voucher_detail_no": "",  # KEY: Links to specific item row for tracking!
                                         "remarks": _("Deferred expense for {0}").format(
                                             item.item_code
                                         ),
@@ -138,21 +145,30 @@ class CustomDeliveryNote(DeliveryNote):
                                 )
                             )
 
-                            # Credit Expense Account (P&L)
+                            # CREDIT: Warehouse Account (Stock Asset) - FIXED!
                             gl_entries.append(
                                 self.get_gl_dict(
                                     {
-                                        "account": expense_account,
-                                        "against": deferred_account,
+                                        "account": warehouse_account.get(
+                                            item.warehouse, {}
+                                        ).get(
+                                            "account"
+                                        ),  # Fixed!
+                                        "against": self.customer,
                                         "credit": amount,
                                         "credit_in_account_currency": amount,
                                         "cost_center": item.cost_center,
                                         "project": item.project or self.project,
+                                        "voucher_detail_no": "",  # KEY: Links to specific item row for tracking!
                                         "remarks": _("Deferred expense for {0}").format(
                                             item.item_code
                                         ),
                                     },
-                                    get_account_currency(expense_account),
+                                    get_account_currency(
+                                        warehouse_account.get(item.warehouse, {}).get(
+                                            "account"
+                                        )
+                                    ),
                                     item=item,
                                 )
                             )
