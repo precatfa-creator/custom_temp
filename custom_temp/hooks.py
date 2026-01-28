@@ -151,12 +151,12 @@ override_doctype_class = {
 # ---------------
 # Hook on document methods and events
 
-doc_events = {
-    "Delivery Note": {
-        "on_submit": "custom_temp.api.after_submit_delivery_note",
-        "on_cancel": "custom_temp.api.after_cancel_delivery_note",
-    }
-}
+# doc_events = {
+#     "Delivery Note": {
+#         "on_submit": "custom_temp.api.after_submit_delivery_note",
+#         "on_cancel": "custom_temp.api.after_cancel_delivery_note",
+#     }
+# }
 
 # Scheduled Tasks
 # ---------------
