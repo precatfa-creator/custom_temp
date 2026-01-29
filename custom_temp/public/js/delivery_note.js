@@ -7,7 +7,7 @@
 
 frappe.ui.form.on("Delivery Note", {
 	setup: function (frm) {
-		frm.set_query("custom_deferred_expense_account", "items", function (doc, cdt, cdn) {
+		frm.set_query("deferred_expense_account", "items", function (doc, cdt, cdn) {
 			return {
 				filters: {
 					root_type: "Asset",
@@ -36,32 +36,27 @@ frappe.ui.form.on("Delivery Note Item", {
 				if (r.message && r.message.enable_deferred_expense) {
 					let data = r.message;
 
-					frappe.model.set_value(cdt, cdn, "custom_enable_deferred_expense", 1);
+					frappe.model.set_value(cdt, cdn, "enable_deferred_expense", 1);
 					frappe.model.set_value(
 						cdt,
 						cdn,
-						"custom_deferred_expense_account",
+						"deferred_expense_account",
 						data.deferred_expense_account,
 					);
-					frappe.model.set_value(
-						cdt,
-						cdn,
-						"custom_service_start_date",
-						frm.doc.posting_date,
-					);
+					frappe.model.set_value(cdt, cdn, "service_start_date", frm.doc.posting_date);
 
 					if (frm.doc.posting_date && data.no_of_months_exp) {
 						let end_date = frappe.datetime.add_months(
 							frm.doc.posting_date,
 							data.no_of_months_exp,
 						);
-						frappe.model.set_value(cdt, cdn, "custom_service_end_date", end_date);
+						frappe.model.set_value(cdt, cdn, "service_end_date", end_date);
 					}
 				} else {
-					frappe.model.set_value(cdt, cdn, "custom_enable_deferred_expense", 0);
-					frappe.model.set_value(cdt, cdn, "custom_deferred_expense_account", "");
-					frappe.model.set_value(cdt, cdn, "custom_service_start_date", "");
-					frappe.model.set_value(cdt, cdn, "custom_service_end_date", "");
+					frappe.model.set_value(cdt, cdn, "enable_deferred_expense", 0);
+					frappe.model.set_value(cdt, cdn, "deferred_expense_account", "");
+					frappe.model.set_value(cdt, cdn, "service_start_date", "");
+					frappe.model.set_value(cdt, cdn, "service_end_date", "");
 				}
 			},
 		});

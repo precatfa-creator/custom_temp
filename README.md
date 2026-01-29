@@ -33,9 +33,9 @@ The solution is built on four pillars: **Overrides**, **Client Scripts**, **Sche
 
 We added custom fields to `tabDelivery Note Item` through Fixtures:
 
-- `custom_enable_deferred_expense`: Checkbox to trigger logic.
-- `custom_deferred_expense_account`: The asset account (e.g., _Prepaid Expenses_).
-- `custom_service_start_date` / `custom_service_end_date`: Defines the amortization period.
+- `enable_deferred_expense`: Checkbox to trigger logic.
+- `deferred_expense_account`: The asset account (e.g., _Prepaid Expenses_).
+- `service_start_date` / `service_end_date`: Defines the amortization period.
 
 ### B. Controller Overrides (`overrides/delivery_note.py`)
 

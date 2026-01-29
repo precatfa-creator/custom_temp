@@ -142,17 +142,17 @@ def _get_eligible_deferred_items(posting_date):
             item.name AS item_name,
             item.parent AS dn_name,
             item.item_code,
-            item.custom_service_start_date,
-            item.custom_service_end_date,
-            item.custom_deferred_expense_account,
+            item.service_start_date,
+            item.service_end_date,
+            item.deferred_expense_account,
             IFNULL(item.base_net_amount, item.amount) AS total_amount
         FROM `tabDelivery Note Item` item
         INNER JOIN `tabDelivery Note` dn ON item.parent = dn.name
-        WHERE item.custom_enable_deferred_expense = 1
-            AND item.custom_service_start_date <= %(posting_date)s
-            AND item.custom_service_end_date >= %(start_of_period)s
+        WHERE item.enable_deferred_expense = 1
+            AND item.service_start_date <= %(posting_date)s
+            AND item.service_end_date >= %(start_of_period)s
             AND dn.docstatus = 1
-            AND IFNULL(item.custom_deferred_expense_account, '') != ''
+            AND IFNULL(item.deferred_expense_account, '') != ''
             AND IFNULL(item.amount, 0) > 0
         ORDER BY dn.posting_date ASC, item.idx ASC
         """,
@@ -279,14 +279,14 @@ def _process_single_item(dn_name, item_name, posting_date):
         return 0
 
     # Validate required fields
-    if not item.get("custom_enable_deferred_expense"):
+    if not item.get("enable_deferred_expense"):
         return 0
 
-    if not item.get("custom_deferred_expense_account"):
+    if not item.get("deferred_expense_account"):
         return 0
 
     # Get accounts
-    deferred_account = item.custom_deferred_expense_account
+    deferred_account = item.deferred_expense_account
     expense_account = _get_expense_account(item, doc.company)
 
     if not expense_account:
@@ -434,8 +434,8 @@ def _get_booking_period(doc, item, deferred_account, posting_date, prev_end_date
         tuple: (start_date, end_date, is_last_entry)
     """
     is_last_entry = False
-    service_start = getdate(item.custom_service_start_date)
-    service_end = getdate(item.custom_service_end_date)
+    service_start = getdate(item.service_start_date)
+    service_end = getdate(item.service_end_date)
 
     # Check for service stop date (optional early termination)
     service_stop = item.get("custom_service_stop_date")
@@ -502,8 +502,8 @@ def _calculate_periodic_amount(
     Returns:
         float: Amount to book for this period
     """
-    service_start = getdate(item.custom_service_start_date)
-    service_end = getdate(item.custom_service_end_date)
+    service_start = getdate(item.service_start_date)
+    service_end = getdate(item.service_end_date)
 
     # Check for service stop date
     service_stop = item.get("custom_service_stop_date")
@@ -745,10 +745,10 @@ def process_deferred_expense_for_dn(dn_name, posting_date=None):
     total_entries = 0
 
     for item in doc.items:
-        if not item.get("custom_enable_deferred_expense"):
+        if not item.get("enable_deferred_expense"):
             continue
 
-        if not item.get("custom_deferred_expense_account"):
+        if not item.get("deferred_expense_account"):
             continue
 
         entries = _process_single_item(
@@ -783,13 +783,13 @@ def get_deferred_expense_status(dn_name):
     status = []
 
     for item in doc.items:
-        if not item.get("custom_enable_deferred_expense"):
+        if not item.get("enable_deferred_expense"):
             continue
 
         total_amount = flt(item.base_net_amount or item.amount)
         already_booked = _get_already_booked_amount(
             company=doc.company,
-            deferred_account=item.custom_deferred_expense_account,
+            deferred_account=item.deferred_expense_account,
             dn_name=doc.name,
             item_name=item.name,
         )
@@ -798,8 +798,8 @@ def get_deferred_expense_status(dn_name):
             {
                 "item_code": item.item_code,
                 "item_name": item.name,
-                "service_start": item.custom_service_start_date,
-                "service_end": item.custom_service_end_date,
+                "service_start": item.service_start_date,
+                "service_end": item.service_end_date,
                 "total_amount": total_amount,
                 "booked_amount": already_booked,
                 "remaining_amount": flt(total_amount - already_booked, 2),

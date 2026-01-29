@@ -26,8 +26,8 @@ class CustomDeliveryNote(DeliveryNote):
     def validate_deferred_expense_accounts(self):
         """Ensure deferred expense items have all required fields."""
         for item in self.items:
-            if item.get("custom_enable_deferred_expense"):
-                if not item.get("custom_deferred_expense_account"):
+            if item.get("enable_deferred_expense"):
+                if not item.get("deferred_expense_account"):
                     frappe.throw(
                         _(
                             "Row {0}: Deferred Expense Account is required when "
@@ -35,7 +35,7 @@ class CustomDeliveryNote(DeliveryNote):
                         ).format(item.idx, item.item_code)
                     )
 
-                if not item.get("custom_service_start_date"):
+                if not item.get("service_start_date"):
                     frappe.throw(
                         _(
                             "Row {0}: Service Start Date is required when "
@@ -43,7 +43,7 @@ class CustomDeliveryNote(DeliveryNote):
                         ).format(item.idx, item.item_code)
                     )
 
-                if not item.get("custom_service_end_date"):
+                if not item.get("service_end_date"):
                     frappe.throw(
                         _(
                             "Row {0}: Service End Date is required when "
@@ -100,7 +100,7 @@ class CustomDeliveryNote(DeliveryNote):
 
         # Check if we have any deferred expense items
         has_deferred_items = any(
-            item.get("custom_enable_deferred_expense") for item in self.items
+            item.get("enable_deferred_expense") for item in self.items
         )
 
         if has_deferred_items and not self.is_return:
@@ -112,8 +112,8 @@ class CustomDeliveryNote(DeliveryNote):
                 # 	item.warehouse, {}
                 # ).get("account")
 
-                if item.get("custom_enable_deferred_expense"):
-                    deferred_account = item.get("custom_deferred_expense_account")
+                if item.get("enable_deferred_expense"):
+                    deferred_account = item.get("deferred_expense_account")
                     expense_account = item.expense_account
 
                     if not expense_account:
