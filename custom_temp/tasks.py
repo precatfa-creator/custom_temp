@@ -438,7 +438,7 @@ def _get_booking_period(doc, item, deferred_account, posting_date, prev_end_date
     service_end = getdate(item.service_end_date)
 
     # Check for service stop date (optional early termination)
-    service_stop = item.get("custom_service_stop_date")
+    service_stop = item.get("service_stop_date")
     if service_stop:
         service_end = min(service_end, getdate(service_stop))
 
@@ -506,7 +506,7 @@ def _calculate_periodic_amount(
     service_end = getdate(item.service_end_date)
 
     # Check for service stop date
-    service_stop = item.get("custom_service_stop_date")
+    service_stop = item.get("service_stop_date")
     if service_stop:
         service_end = min(service_end, getdate(service_stop))
 
